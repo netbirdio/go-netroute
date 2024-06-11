@@ -19,6 +19,7 @@ import (
 	"syscall"
 
 	"github.com/google/gopacket/routing"
+	log "github.com/sirupsen/logrus"
 	"golang.org/x/net/route"
 )
 
@@ -111,6 +112,11 @@ func New() (routing.Router, error) {
 			}
 		}
 		routeInfo.OutputIface = uint32(m.Index)
+
+		if skipCloned(m.Flags, routeInfo) {
+			log.Tracef("skipping cloned default route without gateway: src: %s, dst: %s, interface idx: %d", routeInfo.Src, routeInfo.Dst, routeInfo.OutputIface)
+			continue
+		}
 
 		switch m.Addrs[0].(type) {
 		case *route.Inet4Addr:
