@@ -121,7 +121,7 @@ func (r *bsdRouter) RouteWithSrc(input net.HardwareAddr, src, dst net.IP) (iface
 		},
 	}
 	var rm *route.RouteMessage
-	if rm, err = GeRouteResponseToMsg(m); err != nil {
+	if rm, err = GetRouteMsgAnswer(m); err != nil {
 		return
 	}
 	if iface, err = net.InterfaceByIndex(rm.Index); err != nil {
@@ -135,8 +135,8 @@ func (r *bsdRouter) RouteWithSrc(input net.HardwareAddr, src, dst net.IP) (iface
 	return
 }
 
-// GetRouteResponseToMsg takes an RTM_GET RouteMessage and returns response
-func GeRouteResponseToMsg(m *route.RouteMessage) (*route.RouteMessage, error) {
+// GetRouteMsgAnswer takes an RTM_GET RouteMessage and returns a answer (RouteMessage)
+func GetRouteMsgAnswer(m *route.RouteMessage) (*route.RouteMessage, error) {
 	if m.Type != syscall.RTM_GET {
 		return nil, errors.New("message type is not RTM_GET")
 	}
@@ -174,7 +174,6 @@ func GeRouteResponseToMsg(m *route.RouteMessage) (*route.RouteMessage, error) {
 			continue
 		}
 		return rm, nil
-
 	}
 	return nil, errors.New("failed to read from routing socket")
 }
