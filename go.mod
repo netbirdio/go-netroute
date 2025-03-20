@@ -1,4 +1,4 @@
-module github.com/libp2p/go-netroute
+module github.com/hurricanehrndz/go-netroute
 
 go 1.23.0
 
