@@ -1,9 +1,7 @@
 Go Netroute
 ===
 
-[![](https://img.shields.io/badge/made%20by-Protocol%20Labs-blue.svg?style=flat-square)](http://protocol.ai)
-[![](https://img.shields.io/badge/project-libp2p-yellow.svg?style=flat-square)](http://github.com/libp2p/libp2p)
-[![Build Status](https://travis-ci.com/libp2p/go-netroute.svg?branch=master)](https://travis-ci.com/libp2p/go-netroute)
+Personal fork
 
 A cross-platform implementation of the [`gopacket/routing.Router`](https://godoc.org/github.com/google/gopacket/routing#Router) interface.
 
