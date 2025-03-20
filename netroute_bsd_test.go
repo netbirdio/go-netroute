@@ -19,10 +19,10 @@ type routeOnBSDTest struct {
 
 var routeOnBSDTests = []routeOnBSDTest{
 	{
-		dst:          net.IPv4(127, 0, 0, 1),
+		dst:          net.IP([]byte{127, 0, 0, 1}),
 		iface:        &net.Interface{Name: "lo0"},
 		gateway:      nil,
-		preferredSrc: net.IPv4(127, 0, 0, 1),
+		preferredSrc: net.IP([]byte{127, 0, 0, 1}),
 		err:          nil,
 	},
 }

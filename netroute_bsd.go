@@ -33,9 +33,9 @@ type bsdRouter struct{}
 func toIPAddr(a route.Addr) net.IP {
 	switch t := a.(type) {
 	case *route.Inet4Addr:
-		return t.IP[:], nil
+		return t.IP[:]
 	case *route.Inet6Addr:
-		return t.IP[:], nil
+		return t.IP[:]
 	default:
 		return nil
 	}
