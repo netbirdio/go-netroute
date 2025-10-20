@@ -99,13 +99,23 @@ func (r *router) Route(dst net.IP) (iface *net.Interface, gateway, preferredSrc 
 	return r.RouteWithSrc(nil, nil, dst)
 }
 
+// RouteExcluding returns the best route to the destination, excluding the specified interface.
+// If skipIfaceIndex is 0, no interface is skipped.
+func (r *router) RouteExcluding(dst net.IP, skipIfaceIndex int) (iface *net.Interface, gateway, preferredSrc net.IP, err error) {
+	return r.RouteWithSrcExcluding(nil, nil, dst, skipIfaceIndex)
+}
+
 func (r *router) RouteWithSrc(input net.HardwareAddr, src, dst net.IP) (iface *net.Interface, gateway, preferredSrc net.IP, err error) {
+	return r.RouteWithSrcExcluding(input, src, dst, 0)
+}
+
+func (r *router) RouteWithSrcExcluding(input net.HardwareAddr, src, dst net.IP, skipIfaceIndex int) (iface *net.Interface, gateway, preferredSrc net.IP, err error) {
 	var ifaceIndex int
 	switch {
 	case dst.To4() != nil:
-		ifaceIndex, gateway, preferredSrc, err = r.route(r.v4, input, src, dst)
+		ifaceIndex, gateway, preferredSrc, err = r.route(r.v4, input, src, dst, skipIfaceIndex)
 	case dst.To16() != nil:
-		ifaceIndex, gateway, preferredSrc, err = r.route(r.v6, input, src, dst)
+		ifaceIndex, gateway, preferredSrc, err = r.route(r.v6, input, src, dst, skipIfaceIndex)
 	default:
 		err = errors.New("IP is not valid as IPv4 or IPv6")
 		return
@@ -132,7 +142,7 @@ func (r *router) RouteWithSrc(input net.HardwareAddr, src, dst net.IP) (iface *n
 	return
 }
 
-func (r *router) route(routes routeSlice, input net.HardwareAddr, src, dst net.IP) (iface int, gateway, preferredSrc net.IP, err error) {
+func (r *router) route(routes routeSlice, input net.HardwareAddr, src, dst net.IP, skipIfaceIndex int) (iface int, gateway, preferredSrc net.IP, err error) {
 	var inputIndex uint32
 	if input != nil {
 		for i, iface := range r.ifaces {
@@ -152,6 +162,9 @@ func (r *router) route(routes routeSlice, input net.HardwareAddr, src, dst net.I
 			continue
 		}
 		if rt.Dst != nil && !rt.Dst.Contains(dst) {
+			continue
+		}
+		if skipIfaceIndex > 0 && int(rt.OutputIface) == skipIfaceIndex {
 			continue
 		}
 		if rt.IsMoreSpecThan(mostSpecificRt) {
